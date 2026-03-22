@@ -1,215 +1,213 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CopyPad">
+<meta name="apple-mobile-web-app-title" content="Bobby">
 <meta name="theme-color" content="#0a0a0a">
-<title>CopyPad</title>
+<title>Bobby</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
-  --bg:#0a0a0a;
-  --surface:#141414;
-  --surface2:#1c1c1c;
-  --border:#262626;
-  --accent:#e8ff47;
-  --accent2:#ff6b35;
-  --text:#f0f0f0;
-  --muted:#444;
-  --danger:#ff4455;
+  --bg:#0a0a0a;--surface:#141414;--surface2:#1c1c1c;
+  --border:#262626;--accent:#e8ff47;--accent2:#ff6b35;
+  --text:#f0f0f0;--muted2:#555;--danger:#ff4455;
   --radius:18px;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bottom:env(safe-area-inset-bottom,0px);
 }
-
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
-
-body{
-  display:flex;flex-direction:column;
-  min-height:100dvh;
-  padding-top:calc(var(--safe-top) + 0px);
-  padding-bottom:var(--safe-bottom);
+html,body{
+  height:100%;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;
+  -webkit-tap-highlight-color:transparent;overscroll-behavior:none;
 }
+body{display:flex;flex-direction:column;min-height:100dvh;padding-top:var(--safe-top)}
 
 /* HEADER */
 header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px 22px 14px;
-  border-bottom:1px solid var(--border);
+flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+padding:16px 18px 13px;border-bottom:1px solid var(–border);
 }
-.logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;color:var(--accent)}
-.logo span{color:var(--text)}
-.hbtns{display:flex;gap:10px}
+.logo-wrap{display:flex;flex-direction:column;gap:1px}
+.logo{font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(–accent);line-height:1}
+.logo-sub{font-size:9px;color:#3a3a3a;letter-spacing:.12em;text-transform:uppercase}
+.hbtns{display:flex;gap:8px}
 .ibtn{
-  width:38px;height:38px;border-radius:10px;
-  border:1px solid var(--border);background:var(--surface2);
-  color:var(--text);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:17px;transition:transform .1s,background .1s;
+width:38px;height:38px;border-radius:10px;
+border:1px solid var(–border);background:var(–surface2);
+color:var(–text);display:flex;align-items:center;justify-content:center;
+cursor:pointer;font-size:16px;transition:transform .1s,background .1s;flex-shrink:0;
 }
 .ibtn:active{transform:scale(.88);background:#2a2a2a}
+.ibtn.sort-on{background:#1a1f00;border-color:#5a7000;color:var(–accent)}
 
 /* EDIT BANNER */
 #edit-banner{
-  display:none;align-items:center;justify-content:center;gap:8px;
-  padding:9px 16px;background:#1a0e00;
-  border-bottom:1px solid #3a2200;
-  font-size:12px;color:var(--accent2);letter-spacing:.02em;
+flex-shrink:0;display:none;align-items:center;justify-content:center;gap:8px;
+padding:8px 16px;background:#1a0e00;border-bottom:1px solid #3a2200;
+font-size:11px;color:var(–accent2);letter-spacing:.02em;
 }
 #edit-banner.visible{display:flex}
 
-/* MAIN */
-main{flex:1;padding:20px 16px 12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* MAIN — padding-bottom assez grand pour que le bouton Ajouter soit toujours visible */
+main{
+flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+padding:16px 14px calc(var(–safe-bottom) + 70px + 20px);
+}
 
 /* GRID */
-#grid{display:flex;flex-direction:column;gap:11px}
+#grid{display:flex;flex-direction:column;gap:10px}
 
 /* CLIP BUTTON */
 .clip-btn{
-  position:relative;width:100%;min-height:82px;
-  padding:18px 20px;border-radius:var(--radius);
-  border:1px solid var(--border);background:var(--surface);
-  color:var(--text);text-align:left;cursor:pointer;
-  display:flex;align-items:center;gap:14px;
-  transition:border-color .15s,transform .1s;
-  -webkit-user-select:none;user-select:none;overflow:hidden;
+position:relative;width:100%;min-height:76px;padding:16px 18px;
+border-radius:var(–radius);border:1px solid var(–border);background:var(–surface);
+color:var(–text);text-align:left;cursor:pointer;
+display:flex;align-items:center;gap:13px;
+transition:border-color .15s,transform .1s;
+-webkit-user-select:none;user-select:none;overflow:hidden;
 }
 .clip-btn:active{transform:scale(.97);border-color:#333}
-.clip-btn .btn-icon{font-size:22px;flex-shrink:0;opacity:.7}
-.clip-btn .btn-body{flex:1;min-width:0}
-.clip-btn .btn-label{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;line-height:1.2}
-.clip-btn .btn-preview{
-  font-family:'DM Mono',monospace;font-size:10.5px;color:var(--muted);
-  margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  max-width:100%;display:block;
+.btn-icon{font-size:21px;flex-shrink:0;opacity:.75}
+.btn-body{flex:1;min-width:0}
+.btn-label{font-size:16px;font-weight:700;line-height:1.2;display:block}
+.btn-preview{
+font-size:10px;color:var(–muted2);margin-top:4px;
+overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block;
 }
-.clip-btn .arr{font-size:18px;opacity:.25;flex-shrink:0}
+.btn-uses{font-size:9px;color:#3a3a3a;margin-top:3px;display:block}
+.arr{font-size:18px;opacity:.2;flex-shrink:0}
 
 /* COPIED FLASH */
-.clip-btn.copied{border-color:var(--accent)}
+.clip-btn.copied{border-color:var(–accent)}
 .clip-btn.copied::after{
-  content:'✓ Copié !';position:absolute;inset:0;
-  background:var(--accent);color:#000;
-  font-family:'Syne',sans-serif;font-size:19px;font-weight:800;
-  display:flex;align-items:center;justify-content:center;
-  border-radius:var(--radius);
-  animation:cfade .9s forwards .5s;
+content:‘✓ Copié !’;position:absolute;inset:0;
+background:var(–accent);color:#000;font-size:18px;font-weight:800;
+display:flex;align-items:center;justify-content:center;
+border-radius:var(–radius);animation:cfade .9s forwards .5s;
 }
 @keyframes cfade{to{opacity:0;pointer-events:none}}
 
 /* EDIT MODE */
-.clip-btn.editing{border-color:var(--accent2);cursor:default}
+.clip-btn.editing{border-color:var(–accent2);cursor:default}
 .clip-btn.editing:active{transform:none}
 .eoverlay{
-  position:absolute;inset:0;border-radius:var(--radius);
-  display:flex;align-items:center;justify-content:center;gap:14px;
-  background:rgba(8,8,8,.9);
-  opacity:0;pointer-events:none;transition:opacity .2s;
+position:absolute;inset:0;border-radius:var(–radius);
+display:flex;align-items:center;justify-content:center;gap:12px;
+background:rgba(8,8,8,.92);opacity:0;pointer-events:none;transition:opacity .18s;
 }
 .clip-btn.editing .eoverlay{opacity:1;pointer-events:all}
 .ea{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  padding:11px 18px;border-radius:12px;
-  border:1px solid var(--border);background:var(--surface2);
-  color:var(--text);font-family:'DM Mono',monospace;font-size:11px;
-  cursor:pointer;transition:transform .12s,background .12s;
+display:flex;flex-direction:column;align-items:center;gap:5px;
+padding:10px 16px;border-radius:12px;border:1px solid var(–border);
+background:var(–surface2);color:var(–text);font-size:10px;
+cursor:pointer;transition:transform .1s,background .1s;
 }
 .ea:active{transform:scale(.9);background:#252525}
-.ea .ei{font-size:22px}
-.ea.del{border-color:#3a1015;color:var(--danger)}
+.ea .ei{font-size:20px}
+.ea.del{border-color:#3a1015;color:var(–danger)}
 .ea.del:active{background:#1f0a0d}
 
 /* ADD BTN */
 #add-btn{
-  width:100%;min-height:62px;border-radius:var(--radius);
-  border:1.5px dashed var(--border);background:transparent;
-  color:var(--muted);font-family:'DM Mono',monospace;font-size:13px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
-  margin-top:4px;transition:border-color .15s,color .15s;
+width:100%;min-height:58px;border-radius:var(–radius);
+border:1.5px dashed var(–border);background:transparent;
+color:var(–muted2);font-size:13px;font-family:inherit;
+cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+margin-top:10px;transition:border-color .15s,color .15s;
 }
-#add-btn:active{border-color:var(--accent);color:var(--accent)}
+#add-btn:active{border-color:var(–accent);color:var(–accent)}
 #add-btn.hidden{display:none}
 
 /* MODAL */
 .backdrop{
-  position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;
-  display:flex;align-items:flex-end;
-  opacity:0;pointer-events:none;transition:opacity .25s;
-  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;
+display:flex;align-items:flex-end;
+opacity:0;pointer-events:none;transition:opacity .22s;
+-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
 }
 .backdrop.open{opacity:1;pointer-events:all}
 .modal{
-  width:100%;background:var(--surface);
-  border-radius:26px 26px 0 0;
-  border-top:1px solid var(--border);
-  padding:6px 20px 28px;
-  padding-bottom:calc(28px + var(--safe-bottom));
-  transform:translateY(100%);
-  transition:transform .3s cubic-bezier(.33,1,.68,1);
+width:100%;background:var(–surface);
+border-radius:24px 24px 0 0;border-top:1px solid var(–border);
+padding:6px 18px calc(24px + var(–safe-bottom));
+transform:translateY(100%);
+transition:transform .28s cubic-bezier(.33,1,.68,1);
+max-height:90dvh;overflow-y:auto;
 }
 .backdrop.open .modal{transform:translateY(0)}
-.drag-handle{width:38px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 18px}
-.modal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;margin-bottom:18px;color:var(--accent)}
-.field-label{font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:.05em}
+.drag-handle{width:36px;height:4px;background:var(–border);border-radius:2px;margin:10px auto 16px}
+.modal-title{font-size:16px;font-weight:800;margin-bottom:16px;color:var(–accent)}
+.field-label{font-size:10px;color:var(–muted2);margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase}
 .field-input{
-  width:100%;padding:13px 14px;
-  border-radius:12px;border:1px solid var(--border);
-  background:var(--surface2);color:var(--text);
-  font-family:'DM Mono',monospace;font-size:14px;
-  outline:none;transition:border-color .15s;
-  -webkit-appearance:none;
+width:100%;padding:13px 14px;border-radius:12px;
+border:1px solid var(–border);background:var(–surface2);
+color:var(–text);font-family:inherit;font-size:14px;
+outline:none;transition:border-color .15s;-webkit-appearance:none;
 }
-.field-input:focus{border-color:var(--accent)}
-textarea.field-input{resize:none;min-height:120px;line-height:1.5}
-.field-group{margin-bottom:14px}
-.modal-btns{display:flex;gap:10px;margin-top:20px}
+.field-input:focus{border-color:var(–accent)}
+textarea.field-input{resize:none;min-height:110px;line-height:1.5}
+.field-group{margin-bottom:13px}
+.modal-btns{display:flex;gap:10px;margin-top:18px}
 .mbtn{
-  flex:1;padding:15px;border-radius:14px;
-  border:1px solid var(--border);background:var(--surface2);
-  color:var(--text);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
-  cursor:pointer;transition:transform .1s,background .1s;
+flex:1;padding:14px;border-radius:13px;
+border:1px solid var(–border);background:var(–surface2);
+color:var(–text);font-family:inherit;font-size:15px;font-weight:700;
+cursor:pointer;transition:transform .1s,background .1s;
 }
 .mbtn:active{transform:scale(.96)}
-.mbtn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+.mbtn.primary{background:var(–accent);color:#000;border-color:var(–accent)}
 .mbtn.primary:active{background:#cce03e}
 
 /* TOAST */
 #toast{
-  position:fixed;bottom:calc(20px + var(--safe-bottom));left:50%;
-  transform:translateX(-50%) translateY(20px);
-  background:#1e1e1e;border:1px solid var(--border);
-  color:var(--text);font-size:13px;
-  padding:10px 20px;border-radius:50px;
-  opacity:0;transition:opacity .2s,transform .2s;
-  pointer-events:none;white-space:nowrap;z-index:200;
+position:fixed;bottom:calc(14px + var(–safe-bottom));left:50%;
+transform:translateX(-50%) translateY(14px);
+background:#1e1e1e;border:1px solid #333;color:var(–text);font-size:12px;
+padding:9px 18px;border-radius:50px;
+opacity:0;transition:opacity .2s,transform .2s;
+pointer-events:none;white-space:nowrap;z-index:200;
 }
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* EMPTY STATE */
+/* EMPTY */
 #empty{
-  display:none;flex-direction:column;align-items:center;
-  justify-content:center;gap:12px;padding:60px 20px;color:var(--muted);
-  font-size:13px;text-align:center;
+display:none;flex-direction:column;align-items:center;
+justify-content:center;gap:12px;padding:60px 20px;
+color:var(–muted2);font-size:12px;text-align:center;
 }
-#empty .ei{font-size:40px;opacity:.3}
+#empty .ei{font-size:38px;opacity:.25}
 #empty.visible{display:flex}
+
+/* FOOTER */
+footer{
+position:fixed;bottom:0;left:0;right:0;
+text-align:center;
+padding:5px 0 calc(var(–safe-bottom) + 4px);
+font-size:8.5px;color:#242424;letter-spacing:.04em;
+pointer-events:none;user-select:none;
+}
 </style>
+
 </head>
 <body>
 
 <header>
-  <div class="logo">Copy<span>Pad</span></div>
+  <div class="logo-wrap">
+    <div class="logo">Bobby</div>
+    <div class="logo-sub">san setting</div>
+  </div>
   <div class="hbtns">
-    <button class="ibtn" id="edit-toggle" title="Modifier">✏️</button>
+    <button class="ibtn" id="sort-toggle" title="Tri auto par usage">↕</button>
+    <button class="ibtn" id="edit-toggle" title="Mode édition">✏️</button>
   </div>
 </header>
 
 <div id="edit-banner">
-  <span>⚠️</span> Mode édition — appuie sur un bouton pour le modifier
+  <span>⚠️</span>&nbsp;Mode édition — appuie sur un bouton pour modifier
 </div>
 
 <main>
@@ -221,22 +219,23 @@ textarea.field-input{resize:none;min-height:120px;line-height:1.5}
   <button id="add-btn" class="hidden">＋ &nbsp;Ajouter un bouton</button>
 </main>
 
-<!-- MODAL -->
+<footer>dev par Hackend · systeme.one</footer>
+
 <div class="backdrop" id="modal-backdrop">
-  <div class="modal" id="modal">
+  <div class="modal">
     <div class="drag-handle"></div>
     <div class="modal-title" id="modal-title">Nouveau bouton</div>
     <div class="field-group">
-      <div class="field-label">ICÔNE (emoji)</div>
+      <div class="field-label">Icône (emoji)</div>
       <input class="field-input" id="f-icon" type="text" maxlength="2" placeholder="📋">
     </div>
     <div class="field-group">
-      <div class="field-label">NOM DU BOUTON</div>
+      <div class="field-label">Nom du bouton</div>
       <input class="field-input" id="f-label" type="text" placeholder="Ex : Marketing digital">
     </div>
     <div class="field-group">
-      <div class="field-label">TEXTE À COPIER</div>
-      <textarea class="field-input" id="f-text" placeholder="Colle ici le texte qui sera copié dans le presse-papier..."></textarea>
+      <div class="field-label">Texte à copier</div>
+      <textarea class="field-input" id="f-text" placeholder="Le texte qui sera copié dans le presse-papier..."></textarea>
     </div>
     <div class="modal-btns">
       <button class="mbtn" id="modal-cancel">Annuler</button>
@@ -248,42 +247,36 @@ textarea.field-input{resize:none;min-height:120px;line-height:1.5}
 <div id="toast"></div>
 
 <script>
-// ── DATA ──────────────────────────────────────────────────────────
-const STORAGE_KEY = 'copypad_v1';
+const STORAGE_KEY = 'copypad_v1'; // même clé = données existantes conservées
+const SORT_KEY    = 'copypad_sort';
 
 const defaults = [
-  {
-    id: uid(),
-    icon: '📣',
-    label: 'Marketing Digital',
-    text: 'Bonjour ! Je suis spécialisé en marketing digital : stratégie de contenu, SEO, réseaux sociaux et publicité en ligne. N\'hésitez pas à me contacter pour en discuter.'
-  },
-  {
-    id: uid(),
-    icon: '💼',
-    label: 'Business',
-    text: 'Bonjour ! Je serais ravi d\'explorer des opportunités de collaboration. Mon expertise couvre le développement commercial, la stratégie et la croissance d\'entreprise. Parlons-en !'
-  }
+  { id:uid(), icon:'📣', label:'Marketing Digital', uses:0,
+    text:'Bonjour ! Je suis spécialisé en marketing digital : stratégie de contenu, SEO, réseaux sociaux et publicité en ligne. N\'hésitez pas à me contacter pour en discuter.' },
+  { id:uid(), icon:'💼', label:'Business', uses:0,
+    text:'Bonjour ! Je serais ravi d\'explorer des opportunités de collaboration. Mon expertise couvre le développement commercial, la stratégie et la croissance d\'entreprise. Parlons-en !' }
 ];
 
-function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6) }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6) }
 
 function load(){
-  try{ const d = localStorage.getItem(STORAGE_KEY); return d ? JSON.parse(d) : [...defaults] }
-  catch(e){ return [...defaults] }
+  try{
+    const d = localStorage.getItem(STORAGE_KEY);
+    if(!d) return defaults.map(b=>({...b}));
+    return JSON.parse(d).map(b=>({ uses:0, ...b })); // migration : ajoute uses si absent
+  } catch(e){ return defaults.map(b=>({...b})) }
 }
+function save(d){ localStorage.setItem(STORAGE_KEY, JSON.stringify(d)) }
 
-function save(data){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)) }
+let buttons   = load();
+let editMode  = false;
+let sortAuto  = localStorage.getItem(SORT_KEY)==='1';
+let editingId = null;
 
-// ── STATE ─────────────────────────────────────────────────────────
-let buttons = load();
-let editMode = false;
-let editingId = null; // which button is being configured in modal
-
-// ── DOM ───────────────────────────────────────────────────────────
 const grid        = document.getElementById('grid');
 const addBtn      = document.getElementById('add-btn');
 const editToggle  = document.getElementById('edit-toggle');
+const sortToggle  = document.getElementById('sort-toggle');
 const editBanner  = document.getElementById('edit-banner');
 const empty       = document.getElementById('empty');
 const backdrop    = document.getElementById('modal-backdrop');
@@ -295,184 +288,163 @@ const modalCancel = document.getElementById('modal-cancel');
 const modalSave   = document.getElementById('modal-save');
 const toast       = document.getElementById('toast');
 
-// ── RENDER ────────────────────────────────────────────────────────
-function render(){
-  grid.innerHTML = '';
-  const hasItems = buttons.length > 0;
-  empty.classList.toggle('visible', !hasItems);
-  addBtn.classList.toggle('hidden', !editMode);
-
-  buttons.forEach(btn => {
-    const el = document.createElement('button');
-    el.className = 'clip-btn' + (editMode ? ' editing' : '');
-    el.dataset.id = btn.id;
-    el.innerHTML = `
-      <span class="btn-icon">${btn.icon || '📋'}</span>
-      <span class="btn-body">
-        <span class="btn-label">${escHtml(btn.label)}</span>
-        <span class="btn-preview">${escHtml(btn.text)}</span>
-      </span>
-      <span class="arr">${editMode ? '' : '›'}</span>
-      <span class="eoverlay">
-        <span class="ea" data-action="edit" data-id="${btn.id}">
-          <span class="ei">✏️</span>Modifier
-        </span>
-        <span class="ea del" data-action="delete" data-id="${btn.id}">
-          <span class="ei">🗑️</span>Supprimer
-        </span>
-      </span>
-    `;
-
-    if(!editMode){
-      el.addEventListener('click', () => copyText(btn, el));
-    }
-    grid.appendChild(el);
-  });
-
-  // Delegate edit overlay clicks
-  grid.querySelectorAll('.ea').forEach(ea => {
-    ea.addEventListener('click', e => {
-      e.stopPropagation();
-      const id = ea.dataset.id;
-      if(ea.dataset.action === 'edit') openModal(id);
-      if(ea.dataset.action === 'delete') deleteBtn(id);
-    });
-  });
+function getList(){
+  if(!sortAuto) return buttons;
+  return [...buttons].sort((a,b)=>(b.uses||0)-(a.uses||0));
 }
 
 function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 
+function render(){
+  grid.innerHTML='';
+  const list = getList();
+  empty.classList.toggle('visible', list.length===0);
+  addBtn.classList.toggle('hidden', !editMode);
+  sortToggle.classList.toggle('sort-on', sortAuto);
+
+  list.forEach(btn=>{
+    const el = document.createElement('button');
+    el.className = 'clip-btn'+(editMode?' editing':'');
+    el.dataset.id = btn.id;
+    const usesTag = sortAuto && btn.uses>0
+      ? `<span class="btn-uses">× ${btn.uses}</span>` : '';
+    el.innerHTML=`
+      <span class="btn-icon">${btn.icon||'📋'}</span>
+      <span class="btn-body">
+        <span class="btn-label">${escHtml(btn.label)}</span>
+        <span class="btn-preview">${escHtml(btn.text)}</span>
+        ${usesTag}
+      </span>
+      <span class="arr">${editMode?'':'›'}</span>
+      <span class="eoverlay">
+        <span class="ea" data-action="edit" data-id="${btn.id}"><span class="ei">✏️</span>Modifier</span>
+        <span class="ea del" data-action="delete" data-id="${btn.id}"><span class="ei">🗑️</span>Supprimer</span>
+      </span>`;
+    if(!editMode) el.addEventListener('click',()=>copyText(btn,el));
+    grid.appendChild(el);
+  });
+
+  grid.querySelectorAll('.ea').forEach(ea=>{
+    ea.addEventListener('click',e=>{
+      e.stopPropagation();
+      if(ea.dataset.action==='edit')   openModal(ea.dataset.id);
+      if(ea.dataset.action==='delete') deleteBtn(ea.dataset.id);
+    });
+  });
+}
+
 // ── COPY ──────────────────────────────────────────────────────────
 async function copyText(btn, el){
-  const success = await doCopy(btn.text);
-  if(success){
+  const ok = await doCopy(btn.text);
+  if(ok){
+    const real = buttons.find(b=>b.id===btn.id);
+    if(real){ real.uses=(real.uses||0)+1; save(buttons); }
     el.classList.add('copied');
-    setTimeout(() => el.classList.remove('copied'), 1600);
+    setTimeout(()=>{ el.classList.remove('copied'); render(); }, 1500);
   } else {
     showToast('⚠️ Échec — réessaie');
   }
 }
 
 function doCopy(text){
-  // 1) API moderne (HTTPS / app installée)
-  if(navigator.clipboard && window.isSecureContext){
-    return navigator.clipboard.writeText(text).then(() => true).catch(() => fallbackCopy(text));
-  }
-  // 2) Fallback iOS (file://, http local, etc.)
-  return Promise.resolve(fallbackCopy(text));
+  if(navigator.clipboard && window.isSecureContext)
+    return navigator.clipboard.writeText(text).then(()=>true).catch(()=>fallback(text));
+  return Promise.resolve(fallback(text));
 }
 
-function fallbackCopy(text){
+function fallback(text){
   try{
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    // Hors écran mais dans le DOM visible (requis iOS)
-    ta.style.cssText = 'position:fixed;top:0;left:0;width:2em;height:2em;padding:0;border:none;outline:none;box-shadow:none;background:transparent;opacity:0;';
-    ta.setAttribute('readonly', '');
+    const ta=document.createElement('textarea');
+    ta.value=text;
+    ta.style.cssText='position:fixed;top:0;left:0;width:2em;height:2em;padding:0;border:none;outline:none;background:transparent;opacity:0;';
+    ta.setAttribute('readonly','');
     document.body.appendChild(ta);
-
-    // Sélection spéciale iOS Safari
-    if(navigator.userAgent.match(/ipad|iphone/i)){
-      const range = document.createRange();
-      range.selectNodeContents(ta);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-      ta.setSelectionRange(0, 999999);
-    } else {
-      ta.focus();
-      ta.select();
-    }
-
-    const ok = document.execCommand('copy');
+    if(/ipad|iphone/i.test(navigator.userAgent)){
+      const r=document.createRange();r.selectNodeContents(ta);
+      const s=window.getSelection();s.removeAllRanges();s.addRange(r);
+      ta.setSelectionRange(0,999999);
+    } else { ta.focus();ta.select(); }
+    const ok=document.execCommand('copy');
     document.body.removeChild(ta);
     return ok;
-  } catch(e){
-    return false;
-  }
+  } catch(e){ return false; }
 }
 
-// ── EDIT MODE ─────────────────────────────────────────────────────
-editToggle.addEventListener('click', () => {
-  editMode = !editMode;
-  editToggle.textContent = editMode ? '✅' : '✏️';
-  editBanner.classList.toggle('visible', editMode);
+// ── SORT ──────────────────────────────────────────────────────────
+sortToggle.addEventListener('click',()=>{
+  sortAuto=!sortAuto;
+  localStorage.setItem(SORT_KEY,sortAuto?'1':'0');
   render();
+  showToast(sortAuto?'↕ Tri par usage activé':'↕ Tri désactivé');
+});
+
+// ── EDIT MODE ─────────────────────────────────────────────────────
+editToggle.addEventListener('click',()=>{
+  editMode=!editMode;
+  editToggle.textContent=editMode?'✅':'✏️';
+  editBanner.classList.toggle('visible',editMode);
+  render();
+  if(editMode) setTimeout(()=>addBtn.scrollIntoView({behavior:'smooth',block:'nearest'}),120);
 });
 
 // ── DELETE ────────────────────────────────────────────────────────
 function deleteBtn(id){
   if(!confirm('Supprimer ce bouton ?')) return;
-  buttons = buttons.filter(b => b.id !== id);
-  save(buttons);
-  render();
-  showToast('🗑️ Bouton supprimé');
+  buttons=buttons.filter(b=>b.id!==id);
+  save(buttons); render();
+  showToast('🗑️ Supprimé');
 }
 
 // ── MODAL ─────────────────────────────────────────────────────────
-addBtn.addEventListener('click', () => openModal(null));
+addBtn.addEventListener('click',()=>openModal(null));
 
 function openModal(id){
-  editingId = id;
+  editingId=id;
   if(id){
-    const btn = buttons.find(b => b.id === id);
-    modalTitle.textContent = 'Modifier le bouton';
-    fIcon.value  = btn.icon || '';
-    fLabel.value = btn.label;
-    fText.value  = btn.text;
+    const b=buttons.find(b=>b.id===id);
+    modalTitle.textContent='Modifier';
+    fIcon.value=b.icon||''; fLabel.value=b.label; fText.value=b.text;
   } else {
-    modalTitle.textContent = 'Nouveau bouton';
-    fIcon.value  = '';
-    fLabel.value = '';
-    fText.value  = '';
+    modalTitle.textContent='Nouveau bouton';
+    fIcon.value=fLabel.value=fText.value='';
   }
   backdrop.classList.add('open');
-  setTimeout(() => fLabel.focus(), 350);
+  setTimeout(()=>fLabel.focus(),320);
 }
 
 function closeModal(){ backdrop.classList.remove('open') }
 
-modalCancel.addEventListener('click', closeModal);
-backdrop.addEventListener('click', e => { if(e.target === backdrop) closeModal() });
+modalCancel.addEventListener('click',closeModal);
+backdrop.addEventListener('click',e=>{ if(e.target===backdrop) closeModal() });
 
-modalSave.addEventListener('click', () => {
-  const label = fLabel.value.trim();
-  const text  = fText.value.trim();
-  if(!label){ fLabel.focus(); shake(fLabel); return }
-  if(!text){  fText.focus();  shake(fText);  return }
-
+modalSave.addEventListener('click',()=>{
+  const label=fLabel.value.trim(), text=fText.value.trim();
+  if(!label){ shake(fLabel);fLabel.focus();return }
+  if(!text){  shake(fText); fText.focus(); return }
   if(editingId){
-    const idx = buttons.findIndex(b => b.id === editingId);
-    if(idx !== -1){
-      buttons[idx] = { ...buttons[idx], icon: fIcon.value || '📋', label, text };
-    }
-    showToast('✅ Bouton mis à jour');
+    const i=buttons.findIndex(b=>b.id===editingId);
+    if(i!==-1) buttons[i]={...buttons[i],icon:fIcon.value||'📋',label,text};
+    showToast('✅ Modifié');
   } else {
-    buttons.push({ id: uid(), icon: fIcon.value || '📋', label, text });
-    showToast('✅ Bouton ajouté');
+    buttons.push({id:uid(),icon:fIcon.value||'📋',label,text,uses:0});
+    showToast('✅ Ajouté');
   }
-
-  save(buttons);
-  closeModal();
-  render();
+  save(buttons); closeModal(); render();
 });
 
 // ── UTILS ─────────────────────────────────────────────────────────
 function showToast(msg){
-  toast.textContent = msg;
-  toast.classList.add('show');
+  toast.textContent=msg; toast.classList.add('show');
   clearTimeout(toast._t);
-  toast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+  toast._t=setTimeout(()=>toast.classList.remove('show'),2000);
 }
-
 function shake(el){
-  el.style.animation = 'none';
-  el.style.borderColor = 'var(--danger)';
-  setTimeout(() => { el.style.borderColor = ''; }, 800);
+  el.style.borderColor='var(--danger)';
+  setTimeout(()=>{el.style.borderColor='';},700);
 }
 
-// ── INIT ──────────────────────────────────────────────────────────
 render();
 </script>
+
 </body>
 </html>
