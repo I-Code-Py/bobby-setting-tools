@@ -2,12 +2,12 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no, maximum-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Bobby">
 <meta name="theme-color" content="#0a0a0a">
-<title>Bobby</title>
+<title>Bobby San Setting</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
 
@@ -17,11 +17,14 @@
   --bg:#0a0a0a;
   --surface:#141414;
   --surface2:#1c1c1c;
-  --border:#262626;
+  --border:#2a2a2a;
   --accent:#e8ff47;
   --accent2:#ff6b35;
+  --service:#22c55e;
+  --service-bg:rgba(34,197,94,.08);
+  --service-border:rgba(34,197,94,.22);
   --text:#f0f0f0;
-  --muted:#444;
+  --muted:#555;
   --danger:#ff4455;
   --radius:18px;
   --safe-top:env(safe-area-inset-top,0px);
@@ -35,125 +38,190 @@ html,body{
   font-family:'DM Mono',monospace;
   -webkit-tap-highlight-color:transparent;
   overscroll-behavior:none;
+  overflow:hidden;
+  /* Prevent iOS zoom on input focus */
+  touch-action:pan-y;
 }
 
-/* Layout colonne pleine hauteur */
-body{
+/* ── SLIDE CONTAINER ── */
+#slide-root{
   display:flex;
-  flex-direction:column;
-  min-height:100dvh;
-  padding-top:var(--safe-top);
+  width:200%;
+  height:100dvh;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+#slide-root.show-services{ transform:translateX(-50%) }
+
+/* ── PANEL ── */
+.panel{
+  width:50%;height:100dvh;
+  display:flex;flex-direction:column;overflow:hidden;
 }
 
 /* ── HEADER ── */
 header{
   flex-shrink:0;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px 22px 14px;
+  display:flex;align-items:center;
+  padding:16px 18px 13px;
   border-bottom:1px solid var(--border);
+  position:relative;gap:10px;
 }
-/* Logo identique à l'original */
+.logo-wrap{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
 .logo{
   font-family:'Syne',sans-serif;
-  font-size:22px;font-weight:800;
-  letter-spacing:-0.5px;
-  color:var(--accent);
+  font-size:20px;font-weight:800;letter-spacing:-.5px;
+  color:var(--accent);line-height:1;
 }
-.logo span{color:var(--text)}
-.logo-sub{
-  font-size:9px;color:#3a3a3a;
-  letter-spacing:.12em;text-transform:uppercase;
-  font-family:'DM Mono',monospace;
-  margin-top:2px;
-}
-.logo-wrap{display:flex;flex-direction:column}
+.logo span{color:#b8b8b8}
+/* Services panel — vert */
+#panel-services .logo{color:var(--service)}
+#panel-services .logo span{color:#b8b8b8}
 
-.hbtns{display:flex;gap:10px}
+.logo-sub{
+  font-size:8.5px;color:rgba(255,255,255,.5);
+  letter-spacing:.1em;text-transform:uppercase;
+  font-family:'DM Mono',monospace;margin-top:1px;
+}
+
+/* Back button — perfectly centred */
+.back-btn{
+  display:none;
+  width:34px;height:34px;border-radius:9px;
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text);align-items:center;justify-content:center;
+  cursor:pointer;font-size:18px;line-height:1;
+  transition:transform .1s,background .1s;flex-shrink:0;
+}
+#panel-services .back-btn{display:flex}
+.back-btn:active{transform:scale(.88)}
+
+.hbtns{display:flex;gap:8px;flex-shrink:0}
 .ibtn{
-  width:38px;height:38px;border-radius:10px;
+  width:36px;height:36px;border-radius:9px;
   border:1px solid var(--border);background:var(--surface2);
   color:var(--text);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:17px;
-  transition:transform .1s,background .1s;
-  flex-shrink:0;
+  cursor:pointer;font-size:16px;
+  transition:transform .1s,background .1s;flex-shrink:0;
 }
 .ibtn:active{transform:scale(.88);background:#2a2a2a}
 .ibtn.sort-on{background:#1a1f00;border-color:#5a7000;color:var(--accent)}
+#panel-services .ibtn.sort-on{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:var(--service)}
+
+/* ── MODE DOTS ── */
+.mode-pill{
+  position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);
+  display:flex;gap:5px;align-items:center;
+  background:var(--bg);padding:2px 7px;border-radius:50px;
+  border:1px solid var(--border);z-index:10;
+}
+.mode-dot{width:5px;height:5px;border-radius:50%;background:#333;transition:background .25s,transform .25s}
+.mode-dot.active{background:var(--accent);transform:scale(1.35)}
+#panel-services .mode-dot.active{background:var(--service)}
 
 /* ── EDIT BANNER ── */
-#edit-banner{
-  flex-shrink:0;
-  display:none;align-items:center;justify-content:center;gap:8px;
-  padding:9px 16px;background:#1a0e00;
-  border-bottom:1px solid #3a2200;
-  font-size:12px;color:var(--accent2);letter-spacing:.02em;
+.edit-banner{
+  flex-shrink:0;display:none;align-items:center;justify-content:center;gap:8px;
+  padding:8px 16px;background:#1a0e00;border-bottom:1px solid #3a2200;
+  font-size:11px;color:var(--accent2);letter-spacing:.02em;
 }
-#edit-banner.visible{display:flex}
+.edit-banner.visible{display:flex}
 
-/* ── MAIN ── */
-main{
+/* ── SEARCH BAR — liquid glass, instant open ── */
+.search-bar{
+  flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;
+  overflow:hidden;
+  max-height:0;
+  opacity:0;
+  /* Ultra-fast: 120ms open, opacity leads */
+  transition:max-height .12s cubic-bezier(.4,0,.2,1), opacity .1s ease, padding .12s;
+  background:rgba(18,18,18,.7);
+  -webkit-backdrop-filter:blur(16px) saturate(1.6);
+  backdrop-filter:blur(16px) saturate(1.6);
+}
+.search-bar.visible{
+  max-height:52px;
+  opacity:1;
+  padding:7px 14px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.search-icon{font-size:15px;opacity:.4;flex-shrink:0}
+.search-input{
   flex:1;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  padding:20px 16px 12px;
+  background:rgba(255,255,255,.06);
+  border:1px solid transparent;
+  border-radius:9px;
+  color:var(--text);
+  font-family:'DM Mono',monospace;
+  font-size:14px;
+  padding:8px 12px;
+  outline:none;
+  -webkit-appearance:none;
+  /* Critical: prevent iOS zoom */
+  font-size:16px;
+  transition:border-color .12s,background .12s;
+}
+.search-input:focus{
+  border-color:rgba(232,255,71,.35);
+  background:rgba(255,255,255,.09);
+}
+#panel-services .search-input:focus{border-color:rgba(34,197,94,.35)}
+.search-close{
+  color:var(--muted);font-size:18px;cursor:pointer;
+  padding:4px 2px;line-height:1;transition:color .12s;flex-shrink:0;
+}
+.search-close:active{color:var(--text)}
+
+/* ── SCROLL AREA ── */
+.panel-main{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px 14px 10px;
 }
 
 /* ── GRID ── */
-#grid{display:flex;flex-direction:column;gap:11px}
+.btn-grid{display:flex;flex-direction:column;gap:10px}
 
-/* ── CLIP BUTTON — identique à l'original ── */
+/* ── CLIP BUTTON ── */
 .clip-btn{
-  position:relative;
-  width:100%;min-height:82px;
-  padding:18px 20px;
-  border-radius:var(--radius);
-  border:1px solid var(--border);
-  background:var(--surface);
-  color:var(--text);
-  text-align:left;cursor:pointer;
-  display:flex;align-items:center;gap:14px;
-  transition:border-color .15s,transform .1s;
-  -webkit-user-select:none;user-select:none;
-  overflow:hidden;
-  /* Fix touch sur iOS */
-  touch-action:manipulation;
-  -webkit-appearance:none;
-  appearance:none;
+  position:relative;width:100%;min-height:80px;
+  padding:16px 18px;border-radius:var(--radius);
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text);text-align:left;cursor:pointer;
+  display:flex;align-items:center;gap:13px;
+  transition:border-color .12s,transform .1s;
+  -webkit-user-select:none;user-select:none;overflow:hidden;
+  touch-action:manipulation;-webkit-appearance:none;appearance:none;
 }
 .clip-btn:active{transform:scale(.97);border-color:#333}
+.clip-btn.is-service{
+  border-color:var(--service-border);
+  background:linear-gradient(135deg,var(--surface) 75%,rgba(34,197,94,.06) 100%);
+}
+.service-badge{
+  display:none;position:absolute;top:9px;right:11px;
+  font-size:8.5px;font-family:'DM Mono',monospace;
+  color:var(--service);background:var(--service-bg);
+  border:1px solid var(--service-border);border-radius:50px;
+  padding:2px 6px;letter-spacing:.06em;text-transform:uppercase;
+}
+.clip-btn.is-service .service-badge{display:block}
+.btn-icon{font-size:21px;flex-shrink:0;opacity:.7}
+.btn-body{flex:1;min-width:0;padding-right:4px}
+.btn-label{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;line-height:1.2;display:block}
+.clip-btn.is-service .btn-label{padding-top:3px}
+.btn-preview{font-size:10px;color:var(--muted);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block}
+.btn-uses{font-size:9px;color:#383838;margin-top:2px;display:block}
+.arr{font-size:17px;opacity:.2;flex-shrink:0}
 
-.clip-btn .btn-icon{font-size:22px;flex-shrink:0;opacity:.7}
-.clip-btn .btn-body{flex:1;min-width:0}
-.clip-btn .btn-label{
-  font-family:'Syne',sans-serif;
-  font-size:17px;font-weight:700;line-height:1.2;
-  display:block;
-}
-.clip-btn .btn-preview{
-  font-family:'DM Mono',monospace;
-  font-size:10.5px;color:var(--muted);
-  margin-top:5px;overflow:hidden;
-  text-overflow:ellipsis;white-space:nowrap;
-  max-width:100%;display:block;
-}
-.clip-btn .btn-uses{
-  font-family:'DM Mono',monospace;
-  font-size:9px;color:#383838;
-  margin-top:3px;display:block;
-}
-.clip-btn .arr{font-size:18px;opacity:.25;flex-shrink:0}
-
-/* COPIED FLASH */
+/* COPIED */
 .clip-btn.copied{border-color:var(--accent)}
 .clip-btn.copied::after{
-  content:'✓ Copié !';
-  position:absolute;inset:0;
+  content:'✓ Copié !';position:absolute;inset:0;
   background:var(--accent);color:#000;
-  font-family:'Syne',sans-serif;font-size:19px;font-weight:800;
+  font-family:'Syne',sans-serif;font-size:18px;font-weight:800;
   display:flex;align-items:center;justify-content:center;
-  border-radius:var(--radius);
-  animation:cfade .9s forwards .5s;
-  pointer-events:none;
+  border-radius:var(--radius);animation:cfade .9s forwards .5s;pointer-events:none;
 }
 @keyframes cfade{to{opacity:0}}
 
@@ -162,156 +230,281 @@ main{
 .clip-btn.editing:active{transform:none}
 .eoverlay{
   position:absolute;inset:0;border-radius:var(--radius);
-  display:flex;align-items:center;justify-content:center;gap:14px;
-  background:rgba(8,8,8,.9);
-  opacity:0;pointer-events:none;transition:opacity .2s;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  background:rgba(6,6,6,.88);opacity:0;pointer-events:none;transition:opacity .15s;
 }
 .clip-btn.editing .eoverlay{opacity:1;pointer-events:all}
 .ea{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  padding:11px 18px;border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:10px 16px;border-radius:12px;
   border:1px solid var(--border);background:var(--surface2);
-  color:var(--text);font-family:'DM Mono',monospace;font-size:11px;
-  cursor:pointer;transition:transform .12s,background .12s;
-  touch-action:manipulation;
+  color:var(--text);font-family:'DM Mono',monospace;font-size:10px;
+  cursor:pointer;transition:transform .1s,background .1s;touch-action:manipulation;
 }
 .ea:active{transform:scale(.9);background:#252525}
-.ea .ei{font-size:22px}
+.ea .ei{font-size:20px}
 .ea.del{border-color:#3a1015;color:var(--danger)}
 .ea.del:active{background:#1f0a0d}
 
-/* ── ADD BTN ── */
-#add-btn{
-  width:100%;min-height:62px;border-radius:var(--radius);
+/* ADD BTN */
+.add-btn{
+  width:100%;min-height:58px;border-radius:var(--radius);
   border:1.5px dashed var(--border);background:transparent;
-  color:var(--muted);font-family:'DM Mono',monospace;font-size:13px;
+  color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;
   cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
-  margin-top:4px;transition:border-color .15s,color .15s;
-  touch-action:manipulation;
+  margin-top:8px;transition:border-color .12s,color .12s;touch-action:manipulation;
 }
-#add-btn:active{border-color:var(--accent);color:var(--accent)}
-#add-btn.hidden{display:none}
+.add-btn:active{border-color:var(--accent);color:var(--accent)}
+#panel-services .add-btn:active{border-color:var(--service);color:var(--service)}
+.add-btn.hidden{display:none}
 
-/* ── FOOTER — dans le flux, jamais recouvert ── */
+/* EMPTY */
+.empty-state{
+  display:none;flex-direction:column;align-items:center;
+  justify-content:center;gap:10px;padding:50px 20px;
+  font-size:12px;text-align:center;
+}
+.empty-state .ei{font-size:36px;opacity:.25}
+.empty-state p{color:rgba(255,255,255,.55);line-height:1.5}
+.empty-state.visible{display:flex}
+.no-results{display:none;padding:24px 16px;text-align:center;color:var(--muted);font-size:11px}
+.no-results.visible{display:block}
+
+/* ── FOOTER — static, always compact ── */
 footer{
   flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:7px 16px calc(var(--safe-bottom) + 6px);
+  border-top:1px solid #151515;
+  cursor:pointer;
+  -webkit-user-select:none;user-select:none;
+  position:relative;
+}
+.footer-text{
+  font-size:9px;color:rgba(255,255,255,.32);
+  letter-spacing:.06em;font-family:'DM Mono',monospace;
   text-align:center;
-  padding:10px 0 calc(var(--safe-bottom) + 10px);
-  font-size:9px;color:#242424;
-  letter-spacing:.04em;
+}
+/* Search hint pill on footer */
+.footer-search-hint{
+  font-size:9px;color:rgba(255,255,255,.25);
+  font-family:'DM Mono',monospace;letter-spacing:.04em;
+  display:flex;align-items:center;gap:4px;
+}
+.footer-search-hint .kbd{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+  border-radius:4px;padding:1px 5px;font-size:8px;color:rgba(255,255,255,.45);
   font-family:'DM Mono',monospace;
-  user-select:none;
-  border-top:1px solid #111;
-  margin-top:auto;
 }
 
-/* ── MODAL ── */
+/* ── LIQUID GLASS MODAL ── */
 .backdrop{
-  position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;
+  position:fixed;inset:0;z-index:100;
   display:flex;align-items:flex-end;
-  opacity:0;pointer-events:none;transition:opacity .25s;
-  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;transition:opacity .2s;
+  /* Liquid glass bg */
+  background:rgba(0,0,0,.45);
+  -webkit-backdrop-filter:blur(20px) saturate(1.8);
+  backdrop-filter:blur(20px) saturate(1.8);
 }
 .backdrop.open{opacity:1;pointer-events:all}
 .modal{
-  width:100%;background:var(--surface);
+  width:100%;
+  background:rgba(20,20,20,.82);
+  -webkit-backdrop-filter:blur(24px) saturate(2);
+  backdrop-filter:blur(24px) saturate(2);
   border-radius:26px 26px 0 0;
-  border-top:1px solid var(--border);
+  border-top:1px solid rgba(255,255,255,.1);
   padding:6px 20px calc(28px + var(--safe-bottom));
   transform:translateY(100%);
-  transition:transform .3s cubic-bezier(.33,1,.68,1);
+  transition:transform .26s cubic-bezier(.33,1,.68,1);
   max-height:90dvh;overflow-y:auto;
 }
 .backdrop.open .modal{transform:translateY(0)}
-.drag-handle{width:38px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 18px}
-.modal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;margin-bottom:18px;color:var(--accent)}
-.field-label{font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:.05em}
+.drag-handle{width:36px;height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin:10px auto 16px}
+.modal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;margin-bottom:16px;color:var(--accent)}
+.field-label{font-size:10px;color:var(--muted);margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase}
 .field-input{
   width:100%;padding:13px 14px;border-radius:12px;
-  border:1px solid var(--border);background:var(--surface2);color:var(--text);
-  font-family:'DM Mono',monospace;font-size:14px;
-  outline:none;transition:border-color .15s;-webkit-appearance:none;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.05);
+  color:var(--text);font-family:'DM Mono',monospace;font-size:16px;
+  outline:none;transition:border-color .12s;-webkit-appearance:none;
 }
-.field-input:focus{border-color:var(--accent)}
-textarea.field-input{resize:none;min-height:120px;line-height:1.5}
-.field-group{margin-bottom:14px}
-.modal-btns{display:flex;gap:10px;margin-top:20px}
+.field-input:focus{border-color:rgba(232,255,71,.4)}
+textarea.field-input{resize:none;min-height:110px;line-height:1.5}
+.field-group{margin-bottom:13px}
+
+/* Service toggle */
+.service-toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px;border-radius:12px;
+  border:1px solid var(--border);background:rgba(255,255,255,.04);
+  margin-bottom:13px;transition:border-color .18s,background .18s;
+}
+.service-toggle-row.on{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.06)}
+.stl{display:flex;flex-direction:column;gap:2px}
+.stl span:first-child{font-size:13px;color:var(--text)}
+.stl span:last-child{font-size:10px;color:var(--muted)}
+.service-toggle-row.on .stl span:last-child{color:var(--service)}
+.toggle-switch{
+  width:44px;height:26px;border-radius:13px;
+  background:rgba(255,255,255,.1);position:relative;
+  cursor:pointer;transition:background .18s;flex-shrink:0;
+  border:none;outline:none;-webkit-appearance:none;
+}
+.toggle-switch.on{background:var(--service)}
+.toggle-switch::after{
+  content:'';position:absolute;top:3px;left:3px;
+  width:20px;height:20px;border-radius:50%;background:#fff;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 1px 3px rgba(0,0,0,.4);
+}
+.toggle-switch.on::after{transform:translateX(18px)}
+
+.modal-btns{display:flex;gap:10px;margin-top:16px}
 .mbtn{
-  flex:1;padding:15px;border-radius:14px;
-  border:1px solid var(--border);background:var(--surface2);
+  flex:1;padding:14px;border-radius:13px;
+  border:1px solid var(--border);background:rgba(255,255,255,.06);
   color:var(--text);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
-  cursor:pointer;transition:transform .1s,background .1s;
-  touch-action:manipulation;
+  cursor:pointer;transition:transform .1s,background .1s;touch-action:manipulation;
 }
 .mbtn:active{transform:scale(.96)}
 .mbtn.primary{background:var(--accent);color:#000;border-color:var(--accent)}
 .mbtn.primary:active{background:#cce03e}
 
+/* ── SWIPE HINT ── */
+#swipe-hint{
+  position:fixed;bottom:calc(50px + var(--safe-bottom));right:0;
+  transform:translateX(110%);
+  background:rgba(34,197,94,.12);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1px solid rgba(34,197,94,.2);border-right:none;
+  border-radius:10px 0 0 10px;
+  padding:7px 12px 7px 11px;
+  font-size:10px;color:var(--service);
+  font-family:'DM Mono',monospace;
+  pointer-events:none;
+  transition:transform .22s cubic-bezier(.33,1,.68,1);
+  z-index:50;
+}
+#swipe-hint.show{transform:translateX(0)}
+
 /* ── TOAST ── */
 #toast{
-  position:fixed;bottom:calc(20px + var(--safe-bottom));left:50%;
-  transform:translateX(-50%) translateY(20px);
-  background:#1e1e1e;border:1px solid var(--border);
-  color:var(--text);font-size:13px;
-  padding:10px 20px;border-radius:50px;
-  opacity:0;transition:opacity .2s,transform .2s;
+  position:fixed;bottom:calc(18px + var(--safe-bottom));left:50%;
+  transform:translateX(-50%) translateY(14px);
+  background:rgba(22,22,22,.92);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.1);
+  color:var(--text);font-size:12px;
+  padding:9px 18px;border-radius:50px;
+  opacity:0;transition:opacity .18s,transform .18s;
   pointer-events:none;white-space:nowrap;z-index:200;
 }
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ── EMPTY ── */
-#empty{
-  display:none;flex-direction:column;align-items:center;
-  justify-content:center;gap:12px;padding:60px 20px;
-  color:var(--muted);font-size:13px;text-align:center;
-}
-#empty .ei{font-size:40px;opacity:.3}
-#empty.visible{display:flex}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo-wrap">
-    <div class="logo">Bobby San <span>Clipping</span></div>
-    <div class="logo-sub">Design by Systeme One</div>
-  </div>
-  <div class="hbtns">
-    <button type="button" class="ibtn" id="sort-toggle" title="Tri par usage">↕</button>
-    <button type="button" class="ibtn" id="edit-toggle" title="Mode édition">✏️</button>
-  </div>
-</header>
+<div id="slide-root">
 
-<div id="edit-banner">
-  <span>⚠️</span>&nbsp;Mode édition — appuie sur un bouton pour le modifier
+  <!-- ════════ PANEL PRINCIPAL ════════ -->
+  <div class="panel" id="panel-main">
+    <header>
+      <div class="logo-wrap">
+        <div class="logo">Bobby San <span>Setting</span></div>
+        <div class="logo-sub">Design by Systeme One</div>
+      </div>
+      <div class="hbtns">
+        <button type="button" class="ibtn" id="sort-toggle-main">↕</button>
+        <button type="button" class="ibtn" id="edit-toggle-main">✏️</button>
+      </div>
+      <div class="mode-pill">
+        <div class="mode-dot active"></div>
+        <div class="mode-dot"></div>
+      </div>
+    </header>
+    <div class="edit-banner" id="edit-banner-main">⚠️&nbsp; Mode édition — appuie sur un bouton pour modifier</div>
+    <div class="search-bar" id="search-bar-main">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-input-main" type="search" placeholder="Rechercher…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <span class="search-close" id="search-close-main">×</span>
+    </div>
+    <div class="panel-main" id="main-scroll">
+      <div class="btn-grid" id="grid-main"></div>
+      <div class="empty-state" id="empty-main"><div class="ei">📋</div><p>Aucun bloc.<br>Active ✏️ pour en ajouter un.</p></div>
+      <div class="no-results" id="no-results-main">Aucun résultat</div>
+      <button type="button" class="add-btn hidden" id="add-btn-main">＋ &nbsp;Ajouter un bloc</button>
+    </div>
+    <footer id="footer-main">
+      <span class="footer-text">dev par Hackend · systeme.one</span>
+      <span class="footer-search-hint"><span class="kbd">2×</span>recherche</span>
+    </footer>
+  </div>
+
+  <!-- ════════ PANEL SERVICES ════════ -->
+  <div class="panel" id="panel-services">
+    <header>
+      <button type="button" class="back-btn" id="back-btn">‹</button>
+      <div class="logo-wrap">
+        <div class="logo">Bobby San <span>Services</span></div>
+        <div class="logo-sub">Design by Systeme One</div>
+      </div>
+      <div class="hbtns">
+        <button type="button" class="ibtn" id="sort-toggle-svc">↕</button>
+        <button type="button" class="ibtn" id="edit-toggle-svc">✏️</button>
+      </div>
+      <div class="mode-pill">
+        <div class="mode-dot"></div>
+        <div class="mode-dot active"></div>
+      </div>
+    </header>
+    <div class="edit-banner" id="edit-banner-svc">⚠️&nbsp; Mode édition — appuie sur un bouton pour modifier</div>
+    <div class="search-bar" id="search-bar-svc">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-input-svc" type="search" placeholder="Rechercher…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <span class="search-close" id="search-close-svc">×</span>
+    </div>
+    <div class="panel-main" id="svc-scroll">
+      <div class="btn-grid" id="grid-svc"></div>
+      <div class="empty-state" id="empty-svc"><div class="ei">🟢</div><p>Aucun service.<br>Active ✏️ pour en ajouter un.</p></div>
+      <div class="no-results" id="no-results-svc">Aucun résultat</div>
+      <button type="button" class="add-btn hidden" id="add-btn-svc">＋ &nbsp;Ajouter un service</button>
+    </div>
+    <footer id="footer-svc">
+      <span class="footer-text">dev par Hackend · systeme.one</span>
+      <span class="footer-search-hint"><span class="kbd">2×</span>recherche</span>
+    </footer>
+  </div>
 </div>
 
-<main>
-  <div id="grid"></div>
-  <div id="empty">
-    <div class="ei">📋</div>
-    <div>Aucun bouton.<br>Appuie sur ✏️ puis ajoute-en un.</div>
-  </div>
-  <button type="button" id="add-btn" class="hidden">＋ &nbsp;Ajouter un bouton</button>
-</main>
+<div id="swipe-hint">← Services</div>
 
-<footer>dev par Hackend · systeme.one</footer>
-
+<!-- MODAL -->
 <div class="backdrop" id="modal-backdrop">
   <div class="modal">
     <div class="drag-handle"></div>
-    <div class="modal-title" id="modal-title">Nouveau bouton</div>
+    <div class="modal-title" id="modal-title">Nouveau bloc</div>
     <div class="field-group">
-      <div class="field-label">ICÔNE (emoji)</div>
+      <div class="field-label">Icône (emoji)</div>
       <input class="field-input" id="f-icon" type="text" maxlength="2" placeholder="📋">
     </div>
     <div class="field-group">
-      <div class="field-label">NOM DU BOUTON</div>
+      <div class="field-label">Nom</div>
       <input class="field-input" id="f-label" type="text" placeholder="Ex : Marketing digital">
     </div>
     <div class="field-group">
-      <div class="field-label">TEXTE À COPIER</div>
-      <textarea class="field-input" id="f-text" placeholder="Le texte qui sera copié dans le presse-papier..."></textarea>
+      <div class="field-label">Texte à copier</div>
+      <textarea class="field-input" id="f-text" placeholder="Le texte qui sera copié…"></textarea>
+    </div>
+    <div class="service-toggle-row" id="service-toggle-row">
+      <div class="stl">
+        <span>Marquer comme Service</span>
+        <span id="service-toggle-hint">Apparaîtra dans l'onglet Services</span>
+      </div>
+      <button type="button" class="toggle-switch" id="service-toggle-btn"></button>
     </div>
     <div class="modal-btns">
       <button type="button" class="mbtn" id="modal-cancel">Annuler</button>
@@ -323,231 +516,382 @@ textarea.field-input{resize:none;min-height:120px;line-height:1.5}
 <div id="toast"></div>
 
 <script>
-// ── STORAGE — même clé = données existantes conservées ────────────
-const STORAGE_KEY = 'copypad_v1';
-const SORT_KEY    = 'copypad_sort';
-
-const defaults = [
-  { id:uid(), icon:'📣', label:'Marketing Digital', uses:0,
-    text:'Bonjour ! Je suis spécialisé en marketing digital : stratégie de contenu, SEO, réseaux sociaux et publicité en ligne. N\'hésitez pas à me contacter pour en discuter.' },
-  { id:uid(), icon:'💼', label:'Business', uses:0,
-    text:'Bonjour ! Je serais ravi d\'explorer des opportunités de collaboration. Mon expertise couvre le développement commercial, la stratégie et la croissance d\'entreprise. Parlons-en !' }
-];
-
+// ══ STORAGE ══
+const STORAGE_KEY='copypad_v1', SORT_KEY='copypad_sort', SORT_SVC='copypad_sort_svc';
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6) }
-
+const defaults=[
+  {id:uid(),icon:'📣',label:'Marketing Digital',uses:0,isService:false,
+   text:'Bonjour ! Je suis spécialisé en marketing digital : stratégie de contenu, SEO, réseaux sociaux et publicité en ligne.'},
+  {id:uid(),icon:'💼',label:'Business',uses:0,isService:false,
+   text:'Bonjour ! Je serais ravi d\'explorer des opportunités de collaboration. Mon expertise couvre le développement commercial et la croissance d\'entreprise.'}
+];
 function load(){
   try{
-    const d = localStorage.getItem(STORAGE_KEY);
+    const d=localStorage.getItem(STORAGE_KEY);
     if(!d) return defaults.map(b=>({...b}));
-    // Migration : ajoute le champ uses si absent (anciens boutons)
-    return JSON.parse(d).map(b=>({ uses:0, ...b }));
-  } catch(e){ return defaults.map(b=>({...b})) }
+    return JSON.parse(d).map(b=>({uses:0,isService:false,...b}));
+  }catch(e){return defaults.map(b=>({...b}))}
 }
-function save(d){ localStorage.setItem(STORAGE_KEY, JSON.stringify(d)) }
+function save(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d))}
 
-// ── STATE ─────────────────────────────────────────────────────────
-let buttons   = load();
-let editMode  = false;
-let sortAuto  = localStorage.getItem(SORT_KEY) === '1';
-let editingId = null;
+// ══ STATE ══
+let allButtons=load();
+let editMain=false, editSvc=false;
+let sortMain=localStorage.getItem(SORT_KEY)==='1';
+let sortSvc=localStorage.getItem(SORT_SVC)==='1';
+let editingId=null, serviceToggleOn=false;
+let isServices=false;
+let searchOpenMain=false, searchOpenSvc=false;
 
-// ── DOM ───────────────────────────────────────────────────────────
-const grid        = document.getElementById('grid');
-const addBtn      = document.getElementById('add-btn');
-const editToggle  = document.getElementById('edit-toggle');
-const sortToggle  = document.getElementById('sort-toggle');
-const editBanner  = document.getElementById('edit-banner');
-const empty       = document.getElementById('empty');
-const backdrop    = document.getElementById('modal-backdrop');
-const modalTitle  = document.getElementById('modal-title');
-const fIcon       = document.getElementById('f-icon');
-const fLabel      = document.getElementById('f-label');
-const fText       = document.getElementById('f-text');
-const modalCancel = document.getElementById('modal-cancel');
-const modalSave   = document.getElementById('modal-save');
-const toast       = document.getElementById('toast');
+// ══ DOM ══
+const slideRoot=document.getElementById('slide-root');
+const gridMain=document.getElementById('grid-main');
+const gridSvc=document.getElementById('grid-svc');
+const emptyMain=document.getElementById('empty-main');
+const emptySvc=document.getElementById('empty-svc');
+const noResMain=document.getElementById('no-results-main');
+const noResSvc=document.getElementById('no-results-svc');
+const addBtnMain=document.getElementById('add-btn-main');
+const addBtnSvc=document.getElementById('add-btn-svc');
+const editToggleMain=document.getElementById('edit-toggle-main');
+const editToggleSvc=document.getElementById('edit-toggle-svc');
+const sortToggleMain=document.getElementById('sort-toggle-main');
+const sortToggleSvc=document.getElementById('sort-toggle-svc');
+const editBannerMain=document.getElementById('edit-banner-main');
+const editBannerSvc=document.getElementById('edit-banner-svc');
+const searchBarMain=document.getElementById('search-bar-main');
+const searchBarSvc=document.getElementById('search-bar-svc');
+const searchInputMain=document.getElementById('search-input-main');
+const searchInputSvc=document.getElementById('search-input-svc');
+const searchCloseMain=document.getElementById('search-close-main');
+const searchCloseSvc=document.getElementById('search-close-svc');
+const footerMain=document.getElementById('footer-main');
+const footerSvc=document.getElementById('footer-svc');
+const backBtn=document.getElementById('back-btn');
+const swipeHint=document.getElementById('swipe-hint');
+const backdrop=document.getElementById('modal-backdrop');
+const modalTitle=document.getElementById('modal-title');
+const fIcon=document.getElementById('f-icon');
+const fLabel=document.getElementById('f-label');
+const fText=document.getElementById('f-text');
+const svcToggleRow=document.getElementById('service-toggle-row');
+const svcToggleBtn=document.getElementById('service-toggle-btn');
+const svcToggleHint=document.getElementById('service-toggle-hint');
+const modalCancel=document.getElementById('modal-cancel');
+const modalSave=document.getElementById('modal-save');
+const toast=document.getElementById('toast');
 
-// ── RENDER ────────────────────────────────────────────────────────
-function getList(){
-  if(!sortAuto) return buttons;
-  return [...buttons].sort((a,b)=>(b.uses||0)-(a.uses||0));
+// ══ RENDER ══
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function getList(svc,sort,q){
+  let list=allButtons.filter(b=>svc?b.isService:!b.isService);
+  if(sort) list=[...list].sort((a,b)=>(b.uses||0)-(a.uses||0));
+  if(q){ const lq=q.toLowerCase(); list=list.filter(b=>b.label.toLowerCase().includes(lq)); }
+  return list;
 }
 
-function escHtml(s){
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function renderPanel(svc){
+  const sort=svc?sortSvc:sortMain;
+  const edit=svc?editSvc:editMain;
+  const q=(svc?searchInputSvc:searchInputMain).value.trim();
+  const grid=svc?gridSvc:gridMain;
+  const empty=svc?emptySvc:emptyMain;
+  const noRes=svc?noResSvc:noResMain;
+  const addBtn=svc?addBtnSvc:addBtnMain;
+  const srtBtn=svc?sortToggleSvc:sortToggleMain;
 
-function render(){
-  grid.innerHTML = '';
-  const list = getList();
-  empty.classList.toggle('visible', list.length === 0);
-  addBtn.classList.toggle('hidden', !editMode);
-  sortToggle.classList.toggle('sort-on', sortAuto);
+  const all=getList(svc,sort,'');
+  const list=getList(svc,sort,q);
 
-  list.forEach(btn => {
-    const el = document.createElement('button');
-    el.type = 'button';
-    el.className = 'clip-btn' + (editMode ? ' editing' : '');
-    el.dataset.id = btn.id;
+  srtBtn.classList.toggle('sort-on',sort);
+  addBtn.classList.toggle('hidden',!edit);
+  empty.classList.toggle('visible',all.length===0&&!q);
+  noRes.classList.toggle('visible',all.length>0&&list.length===0&&!!q);
 
-    const usesTag = sortAuto && btn.uses > 0
-      ? `<span class="btn-uses">× ${btn.uses} utilisation${btn.uses>1?'s':''}</span>` : '';
-
-    el.innerHTML = `
-      <span class="btn-icon">${btn.icon || '📋'}</span>
+  grid.innerHTML='';
+  list.forEach(btn=>{
+    const el=document.createElement('button');
+    el.type='button';
+    el.className='clip-btn'+(edit?' editing':'')+(btn.isService?' is-service':'');
+    el.dataset.id=btn.id;
+    const usesTag=sort&&btn.uses>0?`<span class="btn-uses">× ${btn.uses}</span>`:'';
+    el.innerHTML=`
+      <span class="service-badge">service</span>
+      <span class="btn-icon">${btn.icon||'📋'}</span>
       <span class="btn-body">
         <span class="btn-label">${escHtml(btn.label)}</span>
         <span class="btn-preview">${escHtml(btn.text)}</span>
         ${usesTag}
       </span>
-      <span class="arr">${editMode ? '' : '›'}</span>
+      <span class="arr">${edit?'':'›'}</span>
       <span class="eoverlay">
-        <span class="ea" data-action="edit" data-id="${btn.id}">
-          <span class="ei">✏️</span>Modifier
-        </span>
-        <span class="ea del" data-action="delete" data-id="${btn.id}">
-          <span class="ei">🗑️</span>Supprimer
-        </span>
+        <span class="ea" data-action="edit" data-id="${btn.id}"><span class="ei">✏️</span>Modifier</span>
+        <span class="ea del" data-action="delete" data-id="${btn.id}"><span class="ei">🗑️</span>Supprimer</span>
       </span>`;
-
-    // Click pour copier (mode normal uniquement)
-    if(!editMode){
-      el.addEventListener('click', () => copyText(btn, el));
-    }
+    if(!edit) el.addEventListener('click',()=>copyText(btn,el));
     grid.appendChild(el);
   });
-
-  // Clicks sur les actions d'édition
-  grid.querySelectorAll('.ea').forEach(ea => {
-    ea.addEventListener('click', e => {
+  grid.querySelectorAll('.ea').forEach(ea=>{
+    ea.addEventListener('click',e=>{
       e.stopPropagation();
-      if(ea.dataset.action === 'edit')   openModal(ea.dataset.id);
-      if(ea.dataset.action === 'delete') deleteBtn(ea.dataset.id);
+      if(ea.dataset.action==='edit')   openModal(ea.dataset.id,svc);
+      if(ea.dataset.action==='delete') deleteBtn(ea.dataset.id);
     });
   });
 }
+function renderAll(){renderPanel(false);renderPanel(true)}
 
-// ── COPY ──────────────────────────────────────────────────────────
-async function copyText(btn, el){
-  const ok = await doCopy(btn.text);
+// ══ COPY ══
+async function copyText(btn,el){
+  const ok=await doCopy(btn.text);
   if(ok){
-    // Compte l'utilisation
-    const real = buttons.find(b => b.id === btn.id);
-    if(real){ real.uses = (real.uses || 0) + 1; save(buttons); }
+    const real=allButtons.find(b=>b.id===btn.id);
+    if(real){real.uses=(real.uses||0)+1;save(allButtons);}
     el.classList.add('copied');
-    setTimeout(() => { el.classList.remove('copied'); render(); }, 1500);
-  } else {
-    showToast('⚠️ Échec — réessaie');
-  }
+    setTimeout(()=>{el.classList.remove('copied');renderAll();},1500);
+  }else showToast('⚠️ Échec — réessaie');
 }
-
 function doCopy(text){
-  if(navigator.clipboard && window.isSecureContext){
-    return navigator.clipboard.writeText(text).then(() => true).catch(() => fallback(text));
-  }
+  if(navigator.clipboard&&window.isSecureContext)
+    return navigator.clipboard.writeText(text).then(()=>true).catch(()=>fallback(text));
   return Promise.resolve(fallback(text));
 }
-
 function fallback(text){
   try{
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.cssText = 'position:fixed;top:0;left:0;width:2em;height:2em;padding:0;border:none;outline:none;background:transparent;opacity:0;';
-    ta.setAttribute('readonly', '');
+    const ta=document.createElement('textarea');
+    ta.value=text;
+    ta.style.cssText='position:fixed;top:0;left:0;width:2em;height:2em;padding:0;border:none;outline:none;background:transparent;opacity:0;';
+    ta.setAttribute('readonly','');
     document.body.appendChild(ta);
     if(/ipad|iphone/i.test(navigator.userAgent)){
-      const r = document.createRange();
-      r.selectNodeContents(ta);
-      const s = window.getSelection();
-      s.removeAllRanges(); s.addRange(r);
-      ta.setSelectionRange(0, 999999);
-    } else {
-      ta.focus(); ta.select();
-    }
-    const ok = document.execCommand('copy');
+      const r=document.createRange();r.selectNodeContents(ta);
+      const s=window.getSelection();s.removeAllRanges();s.addRange(r);
+      ta.setSelectionRange(0,999999);
+    }else{ta.focus();ta.select();}
+    const ok=document.execCommand('copy');
     document.body.removeChild(ta);
     return ok;
-  } catch(e){ return false; }
+  }catch(e){return false;}
 }
 
-// ── TRI AUTO ──────────────────────────────────────────────────────
-sortToggle.addEventListener('click', () => {
-  sortAuto = !sortAuto;
-  localStorage.setItem(SORT_KEY, sortAuto ? '1' : '0');
-  render();
-  showToast(sortAuto ? '↕ Tri par usage activé' : '↕ Tri désactivé');
+// ══ SLIDE ══
+function goToServices(){
+  if(isServices)return;
+  isServices=true;
+  slideRoot.classList.add('show-services');
+}
+function goToMain(){
+  if(!isServices)return;
+  isServices=false;
+  slideRoot.classList.remove('show-services');
+}
+backBtn.addEventListener('click',goToMain);
+
+// ══ SWIPE — fast threshold ══
+let tx=0,ty=0,tt=0,sw=false,ht=null;
+document.addEventListener('touchstart',e=>{
+  tx=e.touches[0].clientX; ty=e.touches[0].clientY;
+  tt=Date.now(); sw=false;
+},{passive:true});
+document.addEventListener('touchmove',e=>{
+  const dx=e.touches[0].clientX-tx, dy=e.touches[0].clientY-ty;
+  if(Math.abs(dx)>Math.abs(dy)*2&&Math.abs(dx)>15){
+    sw=true;
+    if(!isServices&&dx<-15){
+      clearTimeout(ht);
+      swipeHint.classList.add('show');
+      ht=setTimeout(()=>swipeHint.classList.remove('show'),900);
+    }
+  }
+},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(!sw)return;
+  const dx=e.changedTouches[0].clientX-tx;
+  const dy=e.changedTouches[0].clientY-ty;
+  const dt=Date.now()-tt;
+  if(Math.abs(dx)<Math.abs(dy)*1.5)return;
+  const v=Math.abs(dx)/dt;
+  // Faster thresholds: flick > 0.35px/ms with 30px OR sweep > 60px
+  const isFlick=v>0.35&&Math.abs(dx)>30;
+  const isSweep=Math.abs(dx)>60;
+  if(isFlick||isSweep){
+    if(dx<0&&!isServices)goToServices();
+    if(dx>0&&isServices)goToMain();
+  }
+  swipeHint.classList.remove('show');
+},{passive:true});
+
+// ══ SEARCH ══
+function openSearch(svc){
+  const bar=svc?searchBarSvc:searchBarMain;
+  const input=svc?searchInputSvc:searchInputMain;
+  bar.classList.add('visible');
+  // immediate focus — no delay needed, animation is CSS only
+  input.focus();
+}
+function closeSearch(svc){
+  const bar=svc?searchBarSvc:searchBarMain;
+  const input=svc?searchInputSvc:searchInputMain;
+  const noRes=svc?noResSvc:noResMain;
+  bar.classList.remove('visible');
+  input.value='';
+  input.blur();
+  noRes.classList.remove('visible');
+  renderPanel(svc);
+}
+function isSearchOpen(svc){
+  return (svc?searchBarSvc:searchBarMain).classList.contains('visible');
+}
+
+searchCloseMain.addEventListener('click',()=>closeSearch(false));
+searchCloseSvc.addEventListener('click', ()=>closeSearch(true));
+searchInputMain.addEventListener('input',()=>renderPanel(false));
+searchInputSvc.addEventListener('input', ()=>renderPanel(true));
+
+// Enter: if 1 result, auto-copy
+searchInputMain.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const list=getList(false,sortMain,searchInputMain.value.trim());
+    if(list.length===1){ const el=gridMain.querySelector('.clip-btn'); if(el) copyText(list[0],el); }
+  }
+});
+searchInputSvc.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const list=getList(true,sortSvc,searchInputSvc.value.trim());
+    if(list.length===1){ const el=gridSvc.querySelector('.clip-btn'); if(el) copyText(list[0],el); }
+  }
 });
 
-// ── MODE ÉDITION ──────────────────────────────────────────────────
-editToggle.addEventListener('click', () => {
-  editMode = !editMode;
-  editToggle.textContent = editMode ? '✅' : '✏️';
-  editBanner.classList.toggle('visible', editMode);
-  render();
-  if(editMode) setTimeout(() => addBtn.scrollIntoView({ behavior:'smooth', block:'nearest' }), 120);
+// Tap outside search bar (on scroll area) closes it
+document.getElementById('main-scroll').addEventListener('touchstart',()=>{
+  if(isSearchOpen(false)) closeSearch(false);
+},{passive:true});
+document.getElementById('svc-scroll').addEventListener('touchstart',()=>{
+  if(isSearchOpen(true)) closeSearch(true);
+},{passive:true});
+
+// ══ HEADER SINGLE-TAP = open search (logo area) ══
+// Double-tap on logo-wrap opens search too
+let logoTapMain=0, logoTapSvc=0;
+document.querySelector('#panel-main .logo-wrap').addEventListener('click',()=>{
+  const now=Date.now();
+  if(now-logoTapMain<380){
+    isSearchOpen(false)?closeSearch(false):openSearch(false);
+  }
+  logoTapMain=now;
+});
+document.querySelector('#panel-services .logo-wrap').addEventListener('click',()=>{
+  const now=Date.now();
+  if(now-logoTapSvc<380){
+    isSearchOpen(true)?closeSearch(true):openSearch(true);
+  }
+  logoTapSvc=now;
 });
 
-// ── SUPPRIMER ─────────────────────────────────────────────────────
+// ══ FOOTER DOUBLE-TAP = toggle search ══
+let lastTap=0;
+function handleFooterTap(svc){
+  const now=Date.now();
+  if(now-lastTap<380){
+    isSearchOpen(svc)?closeSearch(svc):openSearch(svc);
+  }
+  lastTap=now;
+}
+footerMain.addEventListener('click',()=>handleFooterTap(false));
+footerSvc.addEventListener('click', ()=>handleFooterTap(true));
+
+// ══ EDIT MODE ══
+function toggleEdit(svc){
+  if(svc){
+    editSvc=!editSvc;
+    editToggleSvc.textContent=editSvc?'✅':'✏️';
+    editBannerSvc.classList.toggle('visible',editSvc);
+    renderPanel(true);
+    if(editSvc) setTimeout(()=>addBtnSvc.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+  }else{
+    editMain=!editMain;
+    editToggleMain.textContent=editMain?'✅':'✏️';
+    editBannerMain.classList.toggle('visible',editMain);
+    renderPanel(false);
+    if(editMain) setTimeout(()=>addBtnMain.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+  }
+}
+editToggleMain.addEventListener('click',()=>toggleEdit(false));
+editToggleSvc.addEventListener('click', ()=>toggleEdit(true));
+
+// ══ SORT ══
+sortToggleMain.addEventListener('click',()=>{
+  sortMain=!sortMain; localStorage.setItem(SORT_KEY,sortMain?'1':'0');
+  renderPanel(false); showToast(sortMain?'↕ Tri par usage':'↕ Tri manuel');
+});
+sortToggleSvc.addEventListener('click',()=>{
+  sortSvc=!sortSvc; localStorage.setItem(SORT_SVC,sortSvc?'1':'0');
+  renderPanel(true); showToast(sortSvc?'↕ Tri par usage':'↕ Tri manuel');
+});
+
+// ══ DELETE ══
 function deleteBtn(id){
-  if(!confirm('Supprimer ce bouton ?')) return;
-  buttons = buttons.filter(b => b.id !== id);
-  save(buttons); render();
-  showToast('🗑️ Supprimé');
+  if(!confirm('Supprimer ce bloc ?'))return;
+  allButtons=allButtons.filter(b=>b.id!==id);
+  save(allButtons);renderAll();showToast('🗑️ Supprimé');
 }
 
-// ── MODAL ─────────────────────────────────────────────────────────
-addBtn.addEventListener('click', () => openModal(null));
-
-function openModal(id){
-  editingId = id;
+// ══ MODAL ══
+addBtnMain.addEventListener('click',()=>openModal(null,false));
+addBtnSvc.addEventListener('click', ()=>openModal(null,true));
+function setServiceToggle(on){
+  serviceToggleOn=on;
+  svcToggleBtn.classList.toggle('on',on);
+  svcToggleRow.classList.toggle('on',on);
+  svcToggleHint.textContent=on?'Visible dans l\'onglet Services ✓':'Apparaîtra dans l\'onglet Services';
+}
+function openModal(id,svc){
+  editingId=id;
   if(id){
-    const b = buttons.find(b => b.id === id);
-    modalTitle.textContent = 'Modifier le bouton';
-    fIcon.value = b.icon || ''; fLabel.value = b.label; fText.value = b.text;
-  } else {
-    modalTitle.textContent = 'Nouveau bouton';
-    fIcon.value = fLabel.value = fText.value = '';
+    const b=allButtons.find(b=>b.id===id);
+    modalTitle.textContent='Modifier le bloc';
+    fIcon.value=b.icon||'';fLabel.value=b.label;fText.value=b.text;
+    setServiceToggle(!!b.isService);
+  }else{
+    modalTitle.textContent='Nouveau bloc';
+    fIcon.value=fLabel.value=fText.value='';
+    setServiceToggle(!!svc);
   }
   backdrop.classList.add('open');
-  setTimeout(() => fLabel.focus(), 320);
+  setTimeout(()=>fLabel.focus(),300);
 }
-
-function closeModal(){ backdrop.classList.remove('open') }
-
-modalCancel.addEventListener('click', closeModal);
-backdrop.addEventListener('click', e => { if(e.target === backdrop) closeModal() });
-
-modalSave.addEventListener('click', () => {
-  const label = fLabel.value.trim();
-  const text  = fText.value.trim();
-  if(!label){ shake(fLabel); fLabel.focus(); return }
-  if(!text){  shake(fText);  fText.focus();  return }
-
+function closeModal(){backdrop.classList.remove('open')}
+svcToggleBtn.addEventListener('click',()=>setServiceToggle(!serviceToggleOn));
+modalCancel.addEventListener('click',closeModal);
+backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeModal()});
+modalSave.addEventListener('click',()=>{
+  const label=fLabel.value.trim(),text=fText.value.trim();
+  if(!label){shake(fLabel);fLabel.focus();return}
+  if(!text){shake(fText);fText.focus();return}
   if(editingId){
-    const i = buttons.findIndex(b => b.id === editingId);
-    if(i !== -1) buttons[i] = { ...buttons[i], icon: fIcon.value || '📋', label, text };
+    const i=allButtons.findIndex(b=>b.id===editingId);
+    if(i!==-1)allButtons[i]={...allButtons[i],icon:fIcon.value||'📋',label,text,isService:serviceToggleOn};
     showToast('✅ Modifié');
-  } else {
-    buttons.push({ id: uid(), icon: fIcon.value || '📋', label, text, uses: 0 });
+  }else{
+    allButtons.push({id:uid(),icon:fIcon.value||'📋',label,text,uses:0,isService:serviceToggleOn});
     showToast('✅ Ajouté');
   }
-  save(buttons); closeModal(); render();
+  save(allButtons);closeModal();renderAll();
 });
 
-// ── UTILS ─────────────────────────────────────────────────────────
+// ══ UTILS ══
 function showToast(msg){
-  toast.textContent = msg;
-  toast.classList.add('show');
+  toast.textContent=msg;toast.classList.add('show');
   clearTimeout(toast._t);
-  toast._t = setTimeout(() => toast.classList.remove('show'), 2000);
+  toast._t=setTimeout(()=>toast.classList.remove('show'),2000);
 }
 function shake(el){
-  el.style.borderColor = 'var(--danger)';
-  setTimeout(() => { el.style.borderColor = ''; }, 700);
+  el.style.borderColor='var(--danger)';
+  setTimeout(()=>{el.style.borderColor='';},700);
 }
 
-render();
+renderAll();
 </script>
 </body>
 </html>
